@@ -7,11 +7,19 @@ document.addEventListener("DOMContentLoaded", function () {
     tank.updateMovement(ctx);
     tank.updateRotation();
     tank.draw(ctx);
-    requestAnimationFrame(gameLoop); // Keep the loop going
+
+    // Update and draw bullets
+    updateAndDrawBullets(ctx, canvas);
+
+    requestAnimationFrame(gameLoop);
   }
 
   // Keyboard control for rotation, forward, and backward movement
   document.addEventListener("keydown", function (e) {
+    if (e.code === "Space") {
+      createBullet(tank);
+    }
+
     switch (e.key) {
       case "ArrowLeft":
         tank.rotateLeft = true;

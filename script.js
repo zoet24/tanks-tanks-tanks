@@ -34,6 +34,8 @@ document.addEventListener("DOMContentLoaded", function () {
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas here
 
+  drawBarriers(ctx, canvas);
+
   tanks.forEach((tank) => {
     if (tank.alive) {
       tank.updateMovement(ctx);

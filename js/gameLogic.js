@@ -21,3 +21,45 @@ function checkBulletTankCollisions() {
   // Remove bullets marked for removal
   bullets = bullets.filter((bullet) => !bullet.remove);
 }
+
+function checkCollisionWithBarriers(rect) {
+  return barriers.some((barrier) => {
+    return (
+      rect.x < barrier.x + barrier.width &&
+      rect.x + rect.width > barrier.x &&
+      rect.y < barrier.y + barrier.height &&
+      rect.y + rect.height > barrier.y
+    );
+  });
+}
+
+function bulletCollidesWithBarrier(bullet) {
+  for (let barrier of barriers) {
+    const distX = Math.abs(bullet.x - barrier.x - barrier.width / 2);
+    const distY = Math.abs(bullet.y - barrier.y - barrier.height / 2);
+
+    if (
+      distX > barrier.width / 2 + bullet.radius ||
+      distY > barrier.height / 2 + bullet.radius
+    ) {
+      continue; // No collision
+    }
+
+    if (distX <= barrier.width / 2 || distY <= barrier.height / 2) {
+      // Determine if the collision is more horizontal or vertical
+      if (distX > distY) {
+        return { collided: true, horizontal: true };
+      } else {
+        return { collided: true, horizontal: false };
+      }
+    }
+
+    // Check corner collisions
+    const dx = distX - barrier.width / 2;
+    const dy = distY - barrier.height / 2;
+    if (dx * dx + dy * dy <= bullet.radius * bullet.radius) {
+      return { collided: true, horizontal: distX > distY };
+    }
+  }
+  return { collided: false }; // No collision occurred
+}

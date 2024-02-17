@@ -67,6 +67,22 @@ class Tank {
 
   updateMovement(ctx) {
     var radians = ((this.direction - 90) * Math.PI) / 180;
+    var nextX = this.x + this.speed * Math.cos(radians);
+    var nextY = this.y + this.speed * Math.sin(radians);
+
+    // Check for barrier collisions
+    if (
+      !checkCollisionWithBarriers({
+        x: nextX,
+        y: nextY,
+        width: this.bodyRadius * 2,
+        height: this.bodyRadius * 2,
+      })
+    ) {
+      // Only move if there's no collision
+      this.x = nextX;
+      this.y = nextY;
+    }
 
     if (this.moveForward) {
       this.speed += this.acceleration;

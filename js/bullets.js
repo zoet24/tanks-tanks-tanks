@@ -31,6 +31,15 @@ function createBullet(tank) {
           this.vy *= -1; // Reverse velocity in Y direction
         }
 
+        const collisionResult = bulletCollidesWithBarrier(this);
+        if (collisionResult.collided) {
+          if (collisionResult.horizontal) {
+            this.vy *= -1; // Reverse vertical velocity for horizontal collision
+          } else {
+            this.vx *= -1; // Reverse horizontal velocity for vertical collision
+          }
+        }
+
         // Update position based on velocity
         this.x += this.vx;
         this.y += this.vy;

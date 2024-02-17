@@ -13,7 +13,7 @@ class Tank {
     this.speed = 0;
     this.maxSpeed = 5;
     this.acceleration = 0.1;
-    this.deceleration = 0.05;
+    this.deceleration = 0.5;
     this.alive = true;
     this.controls = controls; // Object containing control keys
     this.moveForward = false;
@@ -28,8 +28,6 @@ class Tank {
   }
 
   draw(ctx) {
-    // ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clear the canvas
-
     // Change appearance if the tank is not alive
     const fillColor = this.alive ? this.bodyColor : "white";
     const strokeColor = this.alive ? "none" : "black";
@@ -66,58 +64,62 @@ class Tank {
   }
 
   updateMovement(ctx) {
-    var radians = ((this.direction - 90) * Math.PI) / 180;
-    var nextX = this.x + this.speed * Math.cos(radians);
-    var nextY = this.y + this.speed * Math.sin(radians);
+    if (!this.alive) return; // Do not update movement if the tank is not alive
 
-    // Check for barrier collisions
+    var radians = ((this.direction - 90) * Math.PI) / 180;
+    var potentialSpeed = this.speed; // Temporarily hold the potential speed change
+
+    // Calculate potential speed change
+    if (this.moveForward) {
+      potentialSpeed += this.acceleration;
+    } else if (this.moveBackward) {
+      potentialSpeed -= this.acceleration;
+    } else {
+      // Apply deceleration to stop
+      if (this.speed > 0) {
+        potentialSpeed -= this.deceleration;
+      } else if (this.speed < 0) {
+        potentialSpeed += this.deceleration;
+      }
+    }
+
+    // Cap the speed to maxSpeed limits
+    potentialSpeed = Math.max(
+      -this.maxSpeed,
+      Math.min(this.maxSpeed, potentialSpeed)
+    );
+
+    // Calculate next position based on potential speed
+    var nextX = this.x + potentialSpeed * Math.cos(radians);
+    var nextY = this.y + potentialSpeed * Math.sin(radians);
+
+    // Check for barrier collisions with the next position
     if (
       !checkCollisionWithBarriers({
-        x: nextX,
-        y: nextY,
+        x: nextX - this.bodyRadius, // Adjusted for center to edge
+        y: nextY - this.bodyRadius, // Adjusted for center to edge
         width: this.bodyRadius * 2,
         height: this.bodyRadius * 2,
-      })
+      }) &&
+      isWithinCanvasBounds(
+        nextX,
+        nextY,
+        ctx.canvas.width,
+        ctx.canvas.height,
+        this.bodyRadius
+      )
     ) {
-      // Only move if there's no collision
+      // Only update position and speed if there's no collision and within canvas bounds
       this.x = nextX;
       this.y = nextY;
-    }
-
-    if (this.moveForward) {
-      this.speed += this.acceleration;
-      if (this.speed > this.maxSpeed) {
-        this.speed = this.maxSpeed; // Cap the speed at the maxSpeed
-      }
-    } else if (this.moveBackward) {
-      this.speed -= this.acceleration;
-      if (this.speed < -this.maxSpeed) {
-        this.speed = -this.maxSpeed; // Cap the reverse speed
-      }
+      this.speed = potentialSpeed; // Only now apply the speed change
     } else {
-      // Decelerate to stop
-      if (this.speed > 0) {
-        this.speed -= this.deceleration;
-        if (this.speed < 0) this.speed = 0; // Avoid speed going negative due to deceleration
-      } else if (this.speed < 0) {
-        this.speed += this.deceleration;
-        if (this.speed > 0) this.speed = 0; // Avoid speed going positive due to deceleration
-      }
+      // Optionally, reset speed to 0 or a fraction thereof to simulate a "bounce" effect
+      this.speed = 0;
     }
 
-    // Update position based on speed
-    this.x += this.speed * Math.cos(radians);
-    this.y += this.speed * Math.sin(radians);
-
-    // Keep the tank within the canvas boundaries
-    this.x = Math.max(
-      this.bodyRadius,
-      Math.min(ctx.canvas.width - this.bodyRadius, this.x)
-    );
-    this.y = Math.max(
-      this.bodyRadius,
-      Math.min(ctx.canvas.height - this.bodyRadius, this.y)
-    );
+    // Normalize the direction
+    this.direction %= 360;
   }
 
   updateRotation() {

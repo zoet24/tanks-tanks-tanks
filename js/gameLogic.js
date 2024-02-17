@@ -22,6 +22,15 @@ function checkBulletTankCollisions() {
   bullets = bullets.filter((bullet) => !bullet.remove);
 }
 
+function isWithinCanvasBounds(x, y, canvasWidth, canvasHeight, radius) {
+  return (
+    x - radius > 0 &&
+    x + radius < canvasWidth &&
+    y - radius > 0 &&
+    y + radius < canvasHeight
+  );
+}
+
 function checkCollisionWithBarriers(rect) {
   return barriers.some((barrier) => {
     return (

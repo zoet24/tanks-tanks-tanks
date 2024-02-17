@@ -3,11 +3,13 @@ let bullets = []; // Holds all active bullets
 
 function createBullet(tank) {
   // Check if the number of active bullets is less than 5
-  if (bullets.length < 5) {
+  const tankBullets = bullets.filter((bullet) => bullet.tankId === tank.id);
+  if (tankBullets.length < 5) {
     const radians = ((tank.direction - 90) * Math.PI) / 180;
     const bulletSpeed = 5; // Speed of the bullets
     const bulletRadius = 5;
     bullets.push({
+      tankId: tank.id,
       x: tank.x + Math.cos(radians) * (tank.gunLength * 2 - bulletRadius), // Start at gun tip
       y: tank.y + Math.sin(radians) * (tank.gunLength * 2 - bulletRadius),
       radius: bulletRadius,

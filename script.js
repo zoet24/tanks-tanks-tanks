@@ -12,10 +12,17 @@ document.addEventListener("DOMContentLoaded", function () {
     up: "ArrowUp",
     right: "ArrowRight",
     down: "ArrowDown",
+    shoot: "Space",
   };
-  const controls2 = { left: "KeyA", up: "KeyW", right: "KeyD", down: "KeyS" };
-  tanks.push(new Tank(100, 100, "blue", "red", controls1));
-  tanks.push(new Tank(400, 100, "red", "blue", controls2));
+  const controls2 = {
+    left: "KeyA",
+    up: "KeyW",
+    right: "KeyD",
+    down: "KeyS",
+    shoot: "KeyQ",
+  };
+  tanks.push(new Tank(1, 100, 100, "blue", "red", controls1));
+  tanks.push(new Tank(2, 400, 100, "red", "blue", controls2));
 
   // Setup event listeners
   setupKeyboardListeners(); // Make sure this is properly handling multiple tanks

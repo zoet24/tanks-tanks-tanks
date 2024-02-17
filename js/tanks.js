@@ -1,6 +1,7 @@
 // Tank object with properties and methods
 class Tank {
-  constructor(x, y, bodyColor, gunColor, controls) {
+  constructor(id, x, y, bodyColor, gunColor, controls) {
+    this.id = id;
     this.x = x;
     this.y = y;
     this.bodyRadius = 20;

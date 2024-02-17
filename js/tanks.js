@@ -1,55 +1,70 @@
 // Tank object with properties and methods
-const tank = {
-  x: 0,
-  y: 0,
-  bodyRadius: 20,
-  gunWidth: 10,
-  gunLength: 30,
-  bodyColor: "blue",
-  gunColor: "red",
-  direction: 0,
-  speed: 0,
-  maxSpeed: 5,
-  acceleration: 0.1,
-  deceleration: 0.05,
-  moveForward: false,
-  moveBackward: false,
-  rotateLeft: false,
-  rotateRight: false,
+class Tank {
+  constructor(x, y, bodyColor, gunColor, controls) {
+    this.x = x;
+    this.y = y;
+    this.bodyRadius = 20;
+    this.gunWidth = 10;
+    this.gunLength = 30;
+    this.bodyColor = bodyColor;
+    this.gunColor = gunColor;
+    this.direction = 0;
+    this.speed = 0;
+    this.maxSpeed = 5;
+    this.acceleration = 0.1;
+    this.deceleration = 0.05;
+    this.alive = true;
+    this.controls = controls; // Object containing control keys
+    this.moveForward = false;
+    this.moveBackward = false;
+    this.rotateLeft = false;
+    this.rotateRight = false;
+  }
 
-  initialize: function (canvasWidth, canvasHeight) {
+  initialize(canvasWidth, canvasHeight) {
     this.x = canvasWidth / 2;
     this.y = canvasHeight / 2;
-  },
+  }
 
-  draw: function (ctx) {
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clear the canvas
+  draw(ctx) {
+    // ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clear the canvas
+
+    // Change appearance if the tank is not alive
+    const fillColor = this.alive ? this.bodyColor : "white";
+    const strokeColor = this.alive ? "none" : "black";
 
     // Draw the tank body
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.bodyRadius, 0, Math.PI * 2, false);
-    ctx.fillStyle = this.bodyColor;
+    ctx.fillStyle = fillColor;
     ctx.fill();
+    if (!this.alive) {
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
     ctx.closePath();
 
-    // Draw the tank gun, adjusted to point based on direction
-    ctx.save(); // Save the current context state
-    ctx.translate(this.x, this.y); // Move to the tank's position
-    ctx.rotate((this.direction * Math.PI) / 180); // Convert direction to radians and rotate
-    ctx.beginPath();
-    ctx.rect(
-      -this.gunWidth / 2,
-      -this.bodyRadius,
-      this.gunWidth,
-      -this.gunLength
-    );
-    ctx.fillStyle = this.gunColor;
-    ctx.fill();
-    ctx.closePath();
-    ctx.restore(); // Restore the context state
-  },
+    // Proceed to draw the gun if the tank is alive
+    if (this.alive) {
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate((this.direction * Math.PI) / 180);
+      ctx.beginPath();
+      ctx.rect(
+        -this.gunWidth / 2,
+        -this.bodyRadius,
+        this.gunWidth,
+        -this.gunLength
+      );
+      ctx.fillStyle = this.gunColor;
+      ctx.fill();
+      ctx.closePath();
+      ctx.restore();
+    }
+  }
 
-  updateMovement: function (ctx) {
+  updateMovement(ctx) {
     var radians = ((this.direction - 90) * Math.PI) / 180;
 
     if (this.moveForward) {
@@ -86,9 +101,9 @@ const tank = {
       this.bodyRadius,
       Math.min(ctx.canvas.height - this.bodyRadius, this.y)
     );
-  },
+  }
 
-  updateRotation: function () {
+  updateRotation() {
     const rotateSpeed = 2; // Adjust rotation speed as needed for smoother rotation
     if (this.rotateLeft) {
       this.direction -= rotateSpeed;
@@ -97,5 +112,5 @@ const tank = {
       this.direction += rotateSpeed;
     }
     this.direction %= 360;
-  },
-};
+  }
+}

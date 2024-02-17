@@ -1,59 +1,43 @@
+// Define canvas and ctx in a broader scope
+let canvas, ctx;
+let tanks = []; // Assuming tanks are initialized elsewhere or you'll initialize them here
+
 document.addEventListener("DOMContentLoaded", function () {
-  const canvas = document.getElementById("gameCanvas");
-  const ctx = canvas.getContext("2d");
-  tank.initialize(canvas.width, canvas.height);
+  // Initialize canvas and ctx once the DOM is fully loaded
+  canvas = document.getElementById("gameCanvas");
+  ctx = canvas.getContext("2d");
 
-  function gameLoop() {
-    tank.updateMovement(ctx);
-    tank.updateRotation();
-    tank.draw(ctx);
+  const controls1 = {
+    left: "ArrowLeft",
+    up: "ArrowUp",
+    right: "ArrowRight",
+    down: "ArrowDown",
+  };
+  const controls2 = { left: "KeyA", up: "KeyW", right: "KeyD", down: "KeyS" };
+  tanks.push(new Tank(100, 100, "blue", "red", controls1));
+  tanks.push(new Tank(400, 100, "red", "blue", controls2));
 
-    // Update and draw bullets
-    updateAndDrawBullets(ctx, canvas);
+  // Setup event listeners
+  setupKeyboardListeners(); // Make sure this is properly handling multiple tanks
 
-    requestAnimationFrame(gameLoop);
-  }
-
-  // Keyboard control for rotation, forward, and backward movement
-  document.addEventListener("keydown", function (e) {
-    if (e.code === "Space") {
-      createBullet(tank);
-    }
-
-    switch (e.key) {
-      case "ArrowLeft":
-        tank.rotateLeft = true;
-        break;
-      case "ArrowRight":
-        tank.rotateRight = true;
-        break;
-      case "ArrowUp":
-        tank.moveForward = true;
-        break;
-      case "ArrowDown":
-        tank.moveBackward = true;
-        break;
-      // Add spacebar key handler here for firing bullets
-    }
-  });
-
-  document.addEventListener("keyup", function (e) {
-    switch (e.key) {
-      case "ArrowLeft":
-        tank.rotateLeft = false;
-        break;
-      case "ArrowRight":
-        tank.rotateRight = false;
-        break;
-      case "ArrowUp":
-        tank.moveForward = false;
-        break;
-      case "ArrowDown":
-        tank.moveBackward = false;
-        break;
-      // Handle stopping bullet fire if needed
-    }
-  });
-
+  // Start the game loop
   requestAnimationFrame(gameLoop);
 });
+
+function gameLoop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas here
+
+  tanks.forEach((tank) => {
+    if (tank.alive) {
+      tank.updateMovement(ctx);
+      tank.updateRotation();
+    }
+    tank.draw(ctx);
+  });
+
+  // Update and draw bullets, handle collisions, etc.
+  updateAndDrawBullets(ctx, canvas);
+  checkBulletTankCollisions(); // Ensure this function is updated to handle multiple tanks
+
+  requestAnimationFrame(gameLoop);
+}

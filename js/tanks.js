@@ -1,6 +1,14 @@
 // Tank object with properties and methods
 class Tank {
-	constructor(id, bodyColor, gunColor, controls, canvasWidth, canvasHeight) {
+	constructor(
+		id,
+		bodyColor,
+		gunColor,
+		controls,
+		canvasWidth,
+		canvasHeight,
+		barriers,
+	) {
 		this.id = id;
 		this.bodyRadius = 20;
 		this.gunWidth = 10;
@@ -15,16 +23,28 @@ class Tank {
 		this.alive = true;
 		this.controls = controls;
 
-		// Randomize starting position while ensuring the tank is fully within the canvas
-		this.x =
-			this.bodyRadius + Math.random() * (canvasWidth - 2 * this.bodyRadius);
-		this.y =
-			this.bodyRadius + Math.random() * (canvasHeight - 2 * this.bodyRadius);
+		this.setValidStartPosition(canvasWidth, canvasHeight, barriers);
 
 		this.moveForward = false;
 		this.moveBackward = false;
 		this.rotateLeft = false;
 		this.rotateRight = false;
+	}
+
+	setValidStartPosition(canvasWidth, canvasHeight, barriers) {
+		const stepSize = 100; // Use the same step size as for barriers
+		let positionFound = false;
+
+		while (!positionFound) {
+			let x = Math.floor(Math.random() * (canvasWidth / stepSize)) * stepSize;
+			let y = Math.floor(Math.random() * (canvasHeight / stepSize)) * stepSize;
+
+			if (!isPositionOnBarrier(x, y, barriers, this.bodyRadius)) {
+				this.x = x;
+				this.y = y;
+				positionFound = true;
+			}
+		}
 	}
 
 	initialize(canvasWidth, canvasHeight) {

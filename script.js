@@ -1,6 +1,7 @@
 // Define canvas and ctx in a broader scope
 let canvas, ctx;
 let tanks = []; // Assuming tanks are initialized elsewhere or you'll initialize them here
+let barriers = [];
 
 const minWidth = 600; // Minimum canvas width
 const maxWidth = 1200; // Maximum canvas width
@@ -17,6 +18,16 @@ document.addEventListener('DOMContentLoaded', function () {
 	canvas.height =
 		minHeight + Math.floor(Math.random() * (maxHeight - minHeight + 1));
 
+	// canvas.width = 1000;
+	// canvas.height = 1000;
+
+	// Generate barriers before creating tanks
+	for (let i = 0; i < 5; i++) {
+		barriers.push(generateRandomBarrier(canvas.width, canvas.height, 100)); // Ensure stepSize is consistent
+	}
+
+	console.log(barriers);
+
 	const controls1 = {
 		left: 'ArrowLeft',
 		up: 'ArrowUp',
@@ -32,24 +43,39 @@ document.addEventListener('DOMContentLoaded', function () {
 		shoot: 'KeyQ',
 	};
 
+	// Now create tanks, make sure to pass the barriers array
 	tanks.push(
-		new Tank(1, 'blue', 'red', controls1, canvas.width, canvas.height),
+		new Tank(
+			1,
+			'blue',
+			'red',
+			controls1,
+			canvas.width,
+			canvas.height,
+			barriers,
+		),
 	);
 	tanks.push(
-		new Tank(2, 'green', 'yellow', controls2, canvas.width, canvas.height),
+		new Tank(
+			2,
+			'green',
+			'yellow',
+			controls2,
+			canvas.width,
+			canvas.height,
+			barriers,
+		),
 	);
 
-	// Setup event listeners
+	// Setup event listeners and start the game loop
 	setupKeyboardListeners(); // Make sure this is properly handling multiple tanks
-
-	// Start the game loop
 	requestAnimationFrame(gameLoop);
 });
 
 function gameLoop() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas here
 
-	drawBarriers(ctx, canvas);
+	drawBarriers(ctx, barriers);
 
 	tanks.forEach((tank) => {
 		if (tank.alive) {
